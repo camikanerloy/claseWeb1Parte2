@@ -72,6 +72,7 @@ func CreateProduct(ctx *gin.Context) {
 	prod, err := product.Create(request)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, response.Err(err))
+		return
 	}
 
 	//response
