@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/camikanerloy/claseWeb1Parte2/cmd/handlers"
+	"github.com/camikanerloy/claseWeb1Parte2/cmd/server/handlers"
 	"github.com/camikanerloy/claseWeb1Parte2/internal/domain"
 	"github.com/camikanerloy/claseWeb1Parte2/internal/product"
 
@@ -31,28 +31,27 @@ type ResponseByID struct {
 }
 
 func main() {
-	//process
-	err := product.GetProductsStruct()
-
-	if err != nil {
-		panic(err)
-	}
+	repo := product.NewProductRepository()
+	productService := product.NewProductService(repo)
+	productHandler := handlers.NewProductHandler(*productService)
 	//server
 	sv := gin.Default()
 
 	//router
+	sv.GET("/ping", productHandler.GetPong())
 	svProducts := sv.Group("/products")
-	svProducts.GET("/ping", handlers.GetPong)
+	{
+		svProducts.GET("/", productHandler.GetProducts())
 
-	svProducts.GET("/", handlers.GetProducts)
+		svProducts.GET("/:id", productHandler.GetProductById())
 
-	svProducts.GET("/:id", handlers.GetProductById)
+		svProducts.GET("/search", productHandler.GetProductQuery())
 
-	svProducts.GET("/search", handlers.GetProductQuery)
-
-	//Ejercitacion 2
-	svProducts.POST("/", handlers.CreateProduct)
+		//Ejercitacion 2
+		svProducts.POST("/", productHandler.CreateProduct())
+	}
 	//start
+
 	if err := sv.Run(":8080"); err != nil {
 		log.Fatal(err)
 	}
