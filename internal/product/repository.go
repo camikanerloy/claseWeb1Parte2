@@ -1,58 +1,35 @@
 package product
 
 import (
-	"encoding/json"
 	"errors"
-	"io"
-	"os"
 
 	"github.com/camikanerloy/claseWeb1Parte2/internal/domain"
 	"github.com/camikanerloy/claseWeb1Parte2/internal/interfaces"
 )
 
-type ProductRepository struct {
-	interfaces.IProductRepository
-	Products []domain.Product
+type repository struct {
+	interfaces.Repository
+	products []domain.Product
 	cantId   int
 }
 
 //var Products []domain.Product
 
-func NewProductRepository() *ProductRepository {
-	rta := &ProductRepository{}
-	rta.GetProductsStruct()
-	rta.cantId = 500
+func NewRepository(data []domain.Product, cantId int) interfaces.Repository {
+	rta := &repository{
+		products: data,
+		cantId:   cantId,
+	}
+
 	return rta
 }
 
-func (pr *ProductRepository) GetProductsStruct() (err error) {
-
-	jsonFile, err := os.Open("/Users/CKANER/bootcamp/claseWeb1Parte2/products.json")
-
-	if err != nil {
-		return
-	}
-
-	byteValue, err := io.ReadAll(jsonFile)
-
-	if err != nil {
-		return
-	}
-
-	if err = json.Unmarshal(byteValue, &pr.Products); err != nil {
-		return
-	}
-
-	defer jsonFile.Close()
-	return
+func (pr repository) GetAll() ([]domain.Product, error) {
+	return pr.products, nil
 }
 
-func (pr ProductRepository) GetAll() ([]domain.Product, error) {
-	return pr.Products, nil
-}
-
-func (pr ProductRepository) GetProdByID(id int) (product domain.Product, err error) {
-	for _, prod := range pr.Products {
+func (pr repository) GetProdByID(id int) (product domain.Product, err error) {
+	for _, prod := range pr.products {
 		if prod.Id == id {
 			product = prod
 			return
@@ -61,8 +38,8 @@ func (pr ProductRepository) GetProdByID(id int) (product domain.Product, err err
 	return product, errors.New("no se encontro ningun producto con ese id")
 }
 
-func (pr ProductRepository) GetProductsQuery(price float64) (productsQuery []domain.Product, err error) {
-	for _, prod := range pr.Products {
+func (pr repository) GetProductsQuery(price float64) (productsQuery []domain.Product, err error) {
+	for _, prod := range pr.products {
 		if prod.Price > price {
 			productsQuery = append(productsQuery, prod)
 		}
@@ -70,16 +47,16 @@ func (pr ProductRepository) GetProductsQuery(price float64) (productsQuery []dom
 	return
 }
 
-func (pr *ProductRepository) CreateProduct(newProducto domain.Product) (domain.Product, error) {
+func (pr *repository) CreateProduct(newProducto domain.Product) (domain.Product, error) {
 	pr.cantId++
 	newProducto.Id = pr.cantId
-	pr.Products = append(pr.Products, newProducto)
+	pr.products = append(pr.products, newProducto)
 
 	return newProducto, nil
 }
 
-func (pr ProductRepository) ExistCodeValue(code string) bool {
-	for _, p := range pr.Products {
+func (pr repository) ExistCodeValue(code string) bool {
+	for _, p := range pr.products {
 		if p.CodeValue == code {
 			return true
 		}

@@ -1,11 +1,13 @@
 package main
 
 import (
+	"encoding/json"
+	"io"
 	"log"
+	"os"
 
-	"github.com/camikanerloy/claseWeb1Parte2/cmd/server/handlers"
+	"github.com/camikanerloy/claseWeb1Parte2/cmd/server/routes"
 	"github.com/camikanerloy/claseWeb1Parte2/internal/domain"
-	"github.com/camikanerloy/claseWeb1Parte2/internal/product"
 
 	"github.com/gin-gonic/gin"
 )
@@ -31,29 +33,40 @@ type ResponseByID struct {
 }
 
 func main() {
-	repo := product.NewProductRepository()
-	productService := product.NewProductService(repo)
-	productHandler := handlers.NewProductHandler(*productService)
+	data, err := GetProductsStruct()
+	if err != nil {
+		panic(err)
+	}
+
 	//server
 	sv := gin.Default()
-
-	//router
-	sv.GET("/ping", productHandler.GetPong())
-	svProducts := sv.Group("/products")
-	{
-		svProducts.GET("/", productHandler.GetProducts())
-
-		svProducts.GET("/:id", productHandler.GetProductById())
-
-		svProducts.GET("/search", productHandler.GetProductQuery())
-
-		//Ejercitacion 2
-		svProducts.POST("/", productHandler.CreateProduct())
-	}
+	r := routes.NewRoute(&data, sv)
+	r.SetRoutes()
 	//start
 
 	if err := sv.Run(":8080"); err != nil {
 		log.Fatal(err)
 	}
+}
 
+func GetProductsStruct() (data []domain.Product, err error) {
+
+	jsonFile, err := os.Open("/Users/CKANER/bootcamp/claseWeb1Parte2/products.json")
+
+	if err != nil {
+		return
+	}
+
+	byteValue, err := io.ReadAll(jsonFile)
+
+	if err != nil {
+		return
+	}
+
+	if err = json.Unmarshal(byteValue, &data); err != nil {
+		return
+	}
+
+	defer jsonFile.Close()
+	return
 }

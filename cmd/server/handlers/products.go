@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	"github.com/camikanerloy/claseWeb1Parte2/internal/domain"
-	"github.com/camikanerloy/claseWeb1Parte2/internal/product"
+	"github.com/camikanerloy/claseWeb1Parte2/internal/interfaces"
 	"github.com/camikanerloy/claseWeb1Parte2/pkg/response"
 	"github.com/go-playground/validator/v10"
 
@@ -14,10 +14,10 @@ import (
 
 type ProductHandler struct {
 	// Interfaz?
-	ProductService product.ProductService
+	ProductService interfaces.Service
 }
 
-func NewProductHandler(service product.ProductService) *ProductHandler {
+func NewProductHandler(service interfaces.Service) *ProductHandler {
 	return &ProductHandler{
 		ProductService: service,
 	}

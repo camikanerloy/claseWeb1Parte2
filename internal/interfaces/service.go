@@ -2,7 +2,8 @@ package interfaces
 
 import "github.com/camikanerloy/claseWeb1Parte2/internal/domain"
 
-type IProductService interface {
+type Service interface {
+	GetProducts() (prod []domain.Product, err error)
 	GetByID(id int) (product domain.Product, err error)
 	GetProductsQuery(price float64) (productsQuery []domain.Product, err error)
 	//ExistCodeValue(code string) bool

@@ -11,9 +11,9 @@ import (
 	"github.com/camikanerloy/claseWeb1Parte2/internal/interfaces"
 )
 
-type ProductService struct {
-	interfaces.IProductService
-	RepoProd interfaces.IProductRepository
+type productService struct {
+	interfaces.Service
+	RepoProd interfaces.Repository
 }
 
 var cantId int = 500
@@ -21,13 +21,13 @@ var (
 	ErrAlreadyExist = errors.New("error: item already exist")
 )
 
-func NewProductService(repo interfaces.IProductRepository) *ProductService {
-	return &ProductService{
+func NewService(repo interfaces.Repository) interfaces.Service {
+	return &productService{
 		RepoProd: repo,
 	}
 }
 
-func (provServ ProductService) GetProducts() (prod []domain.Product, err error) {
+func (provServ productService) GetProducts() (prod []domain.Product, err error) {
 	prod, err = provServ.RepoProd.GetAll()
 
 	if err != nil {
@@ -36,7 +36,7 @@ func (provServ ProductService) GetProducts() (prod []domain.Product, err error) 
 	return prod, nil
 }
 
-func (prodServ ProductService) GetByID(id int) (product domain.Product, err error) {
+func (prodServ productService) GetByID(id int) (product domain.Product, err error) {
 	if id < 0 {
 		return product, errors.New("no se puede enviar un id negativo")
 	}
@@ -44,7 +44,7 @@ func (prodServ ProductService) GetByID(id int) (product domain.Product, err erro
 	return
 }
 
-func (prodServ ProductService) GetProductsQuery(price float64) (productsQuery []domain.Product, err error) {
+func (prodServ productService) GetProductsQuery(price float64) (productsQuery []domain.Product, err error) {
 	if price < 0 {
 		return []domain.Product{}, errors.New("el ID no puede ser igual o menor a 0")
 	}
@@ -64,7 +64,7 @@ func (prodServ ProductService) GetProductsQuery(price float64) (productsQuery []
 		return false
 	}
 */
-func ValidateExpiration(expiration string) (err error) {
+func (prodServ productService) ValidateExpiration(expiration string) (err error) {
 	re := regexp.MustCompile("([0-9]{2})([/])([0-9]{2})([/])([0-9]{4})")
 	//re := regexp.MustCompile("(0?[1-9]|[12][0-9]|3[01])/(0?[1-9]|1[012])/((19|20)\\d\\d)")
 	if !re.MatchString(expiration) {
@@ -93,12 +93,12 @@ func ValidateExpiration(expiration string) (err error) {
 }
 
 // Ejercitacion 2
-func (prodServ ProductService) Create(resq domain.Request) (prod domain.Product, err error) {
+func (prodServ productService) Create(resq domain.Request) (prod domain.Product, err error) {
 	//validaciones
 	if prodServ.RepoProd.ExistCodeValue(resq.CodeValue) {
 		return domain.Product{}, fmt.Errorf("%w. %s", ErrAlreadyExist, "url not unique")
 	}
-	errExpiration := ValidateExpiration(resq.Expiration)
+	errExpiration := prodServ.ValidateExpiration(resq.Expiration)
 	if errExpiration != nil {
 		return domain.Product{}, fmt.Errorf("%w. %s", errExpiration, "Date invalidate")
 	}
