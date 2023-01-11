@@ -9,4 +9,5 @@ type Service interface {
 	//ExistCodeValue(code string) bool
 	ValidateExpiration(expiration string) (err error)
 	Create(resq domain.Request) (prod domain.Product, err error)
+	Update(id int, p domain.Product) (domain.Product, error)
 }

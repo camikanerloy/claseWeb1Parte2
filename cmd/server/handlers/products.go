@@ -109,3 +109,67 @@ func (ph ProductHandler) CreateProduct() gin.HandlerFunc {
 		ctx.JSON(http.StatusCreated, response.Ok("suceed to create website", prod))
 	}
 }
+
+// Put actualiza un producto
+func (h *ProductHandler) Put() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		idParam := ctx.Param("id")
+		id, err := strconv.Atoi(idParam)
+		if err != nil {
+			ctx.JSON(400, gin.H{"error": "invalid id"})
+			return
+		}
+		var product domain.Product
+		err = ctx.ShouldBindJSON(&product)
+		if err != nil {
+			ctx.JSON(400, gin.H{"error": "invalid product"})
+			return
+		}
+		p, err := h.ProductService.Update(id, product)
+		if err != nil {
+			ctx.JSON(409, gin.H{"error": err.Error()})
+			return
+		}
+		ctx.JSON(200, p)
+	}
+}
+
+// Patch update selected fields of a product WIP
+func (h *ProductHandler) Patch() gin.HandlerFunc {
+	type Request struct {
+		Name        string  `json:"name,omitempty"`
+		Quantity    int     `json:"quantity,omitempty"`
+		CodeValue   string  `json:"code_value,omitempty"`
+		IsPublished bool    `json:"is_published,omitempty"`
+		Expiration  string  `json:"expiration,omitempty"`
+		Price       float64 `json:"price,omitempty"`
+	}
+	return func(ctx *gin.Context) {
+		var r Request
+		idParam := ctx.Param("id")
+		id, err := strconv.Atoi(idParam)
+		if err != nil {
+			ctx.JSON(400, gin.H{"error": "invalid id"})
+			return
+		}
+		if err := ctx.ShouldBindJSON(&r); err != nil {
+			ctx.JSON(400, gin.H{"error": "invalid request"})
+			return
+		}
+		update := domain.Product{
+			Name:        r.Name,
+			Quantity:    r.Quantity,
+			CodeValue:   r.CodeValue,
+			IsPublished: r.IsPublished,
+			Expiration:  r.Expiration,
+			Price:       r.Price,
+		}
+
+		p, err := h.ProductService.Update(id, update)
+		if err != nil {
+			ctx.JSON(409, gin.H{"error": err.Error()})
+			return
+		}
+		ctx.JSON(200, p)
+	}
+}

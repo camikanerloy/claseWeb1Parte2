@@ -118,3 +118,30 @@ func (prodServ productService) Create(resq domain.Request) (prod domain.Product,
 
 	return
 }
+
+func (s *productService) Update(id int, u domain.Product) (domain.Product, error) {
+	p, err := s.RepoProd.GetProdByID(id)
+	if err != nil {
+		return domain.Product{}, err
+	}
+	if u.Name != "" {
+		p.Name = u.Name
+	}
+	if u.CodeValue != "" {
+		p.CodeValue = u.CodeValue
+	}
+	if u.Expiration != "" {
+		p.Expiration = u.Expiration
+	}
+	if u.Quantity > 0 {
+		p.Quantity = u.Quantity
+	}
+	if u.Price > 0 {
+		p.Price = u.Price
+	}
+	p, err = s.RepoProd.Update(id, p)
+	if err != nil {
+		return domain.Product{}, err
+	}
+	return p, nil
+}

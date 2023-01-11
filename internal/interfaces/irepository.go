@@ -10,4 +10,5 @@ type Repository interface {
 	GetProductsQuery(float64) ([]domain.Product, error)
 	CreateProduct(newProducto domain.Product) (domain.Product, error)
 	ExistCodeValue(code string) bool
+	Update(id int, p domain.Product) (domain.Product, error)
 }

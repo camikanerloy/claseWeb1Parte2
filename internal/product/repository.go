@@ -63,3 +63,16 @@ func (pr repository) ExistCodeValue(code string) bool {
 	}
 	return false
 }
+
+func (r *repository) Update(id int, p domain.Product) (domain.Product, error) {
+	for i, product := range r.products {
+		if product.Id == id {
+			if r.ExistCodeValue(p.CodeValue) && product.CodeValue != p.CodeValue {
+				return domain.Product{}, errors.New("code value already exists")
+			}
+			r.products[i] = p
+			return p, nil
+		}
+	}
+	return domain.Product{}, errors.New("product not found")
+}

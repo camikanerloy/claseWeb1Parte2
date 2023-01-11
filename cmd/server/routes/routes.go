@@ -41,5 +41,7 @@ func (r *Router) SetProduct() {
 
 		//Ejercitacion 2
 		prods.POST("/", h.CreateProduct())
+		prods.PUT("/:id", h.Put())
+		prods.PATCH("/:id", h.Patch())
 	}
 }
