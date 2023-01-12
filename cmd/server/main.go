@@ -8,6 +8,7 @@ import (
 
 	"github.com/camikanerloy/claseWeb1Parte2/cmd/server/routes"
 	"github.com/camikanerloy/claseWeb1Parte2/internal/domain"
+	"github.com/joho/godotenv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -33,14 +34,13 @@ type ResponseByID struct {
 }
 
 func main() {
-	data, err := GetProductsStruct()
-	if err != nil {
-		panic(err)
+	if err := godotenv.Load("/Users/CKANER/bootcamp/claseWeb1Parte2/cmd/server/.env"); err != nil {
+		panic("Error loading .env file: " + err.Error())
 	}
 
 	//server
 	sv := gin.Default()
-	r := routes.NewRoute(&data, sv)
+	r := routes.NewRoute(sv)
 	r.SetRoutes()
 	//start
 

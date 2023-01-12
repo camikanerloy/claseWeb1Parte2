@@ -16,7 +16,6 @@ type productService struct {
 	RepoProd interfaces.Repository
 }
 
-var cantId int = 500
 var (
 	ErrAlreadyExist = errors.New("error: item already exist")
 )
@@ -95,17 +94,12 @@ func (prodServ productService) ValidateExpiration(expiration string) (err error)
 // Ejercitacion 2
 func (prodServ productService) Create(resq domain.Request) (prod domain.Product, err error) {
 	//validaciones
-	if prodServ.RepoProd.ExistCodeValue(resq.CodeValue) {
-		return domain.Product{}, fmt.Errorf("%w. %s", ErrAlreadyExist, "url not unique")
-	}
 	errExpiration := prodServ.ValidateExpiration(resq.Expiration)
 	if errExpiration != nil {
 		return domain.Product{}, fmt.Errorf("%w. %s", errExpiration, "Date invalidate")
 	}
 
-	cantId++
 	newProd := domain.Product{
-		//Id:          cantId,
 		Name:        resq.Name,
 		Quantity:    resq.Quantity,
 		CodeValue:   resq.CodeValue,
@@ -144,4 +138,12 @@ func (s *productService) Update(id int, u domain.Product) (domain.Product, error
 		return domain.Product{}, err
 	}
 	return p, nil
+}
+
+func (s *productService) Delete(id int) error {
+	err := s.RepoProd.Delete(id)
+	if err != nil {
+		return err
+	}
+	return nil
 }

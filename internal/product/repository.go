@@ -5,41 +5,45 @@ import (
 
 	"github.com/camikanerloy/claseWeb1Parte2/internal/domain"
 	"github.com/camikanerloy/claseWeb1Parte2/internal/interfaces"
+	"github.com/camikanerloy/claseWeb1Parte2/pkg/store"
 )
 
 type repository struct {
 	interfaces.Repository
-	products []domain.Product
-	cantId   int
+	st     store.Store
+	cantId int
 }
 
 //var Products []domain.Product
 
-func NewRepository(data []domain.Product, cantId int) interfaces.Repository {
+func NewRepository(cantId int, st store.Store) interfaces.Repository {
 	rta := &repository{
-		products: data,
-		cantId:   cantId,
+		st:     st,
+		cantId: cantId,
 	}
 
 	return rta
 }
 
 func (pr repository) GetAll() ([]domain.Product, error) {
-	return pr.products, nil
+	products, err := pr.st.GetAll()
+	if err != nil {
+		return []domain.Product{}, err
+	}
+	return products, nil
 }
 
 func (pr repository) GetProdByID(id int) (product domain.Product, err error) {
-	for _, prod := range pr.products {
-		if prod.Id == id {
-			product = prod
-			return
-		}
-	}
-	return product, errors.New("no se encontro ningun producto con ese id")
+	product, err = pr.st.GetOne(id)
+	return
 }
 
 func (pr repository) GetProductsQuery(price float64) (productsQuery []domain.Product, err error) {
-	for _, prod := range pr.products {
+	products, err := pr.st.GetAll()
+	if err != nil {
+		return nil, err
+	}
+	for _, prod := range products {
 		if prod.Price > price {
 			productsQuery = append(productsQuery, prod)
 		}
@@ -48,15 +52,24 @@ func (pr repository) GetProductsQuery(price float64) (productsQuery []domain.Pro
 }
 
 func (pr *repository) CreateProduct(newProducto domain.Product) (domain.Product, error) {
+	if pr.ExistCodeValue(newProducto.CodeValue) {
+		return domain.Product{}, errors.New("code value already exists")
+	}
 	pr.cantId++
 	newProducto.Id = pr.cantId
-	pr.products = append(pr.products, newProducto)
-
+	err := pr.st.AddOne(newProducto)
+	if err != nil {
+		return domain.Product{}, errors.New("error creating product")
+	}
 	return newProducto, nil
 }
 
 func (pr repository) ExistCodeValue(code string) bool {
-	for _, p := range pr.products {
+	products, err := pr.st.GetAll()
+	if err != nil {
+		return false
+	}
+	for _, p := range products {
 		if p.CodeValue == code {
 			return true
 		}
@@ -65,14 +78,27 @@ func (pr repository) ExistCodeValue(code string) bool {
 }
 
 func (r *repository) Update(id int, p domain.Product) (domain.Product, error) {
-	for i, product := range r.products {
-		if product.Id == id {
-			if r.ExistCodeValue(p.CodeValue) && product.CodeValue != p.CodeValue {
-				return domain.Product{}, errors.New("code value already exists")
-			}
-			r.products[i] = p
-			return p, nil
-		}
+	prod, err := r.st.GetOne(id)
+
+	if err != nil {
+		return domain.Product{}, errors.New("product not found")
 	}
-	return domain.Product{}, errors.New("product not found")
+
+	if r.ExistCodeValue(p.CodeValue) && prod.CodeValue != p.CodeValue {
+		return domain.Product{}, errors.New("code value already exists")
+	}
+	err = r.st.UpdateOne(p)
+	if err != nil {
+		return domain.Product{}, errors.New("error updating product")
+	}
+
+	return p, nil
+}
+
+func (pr *repository) Delete(id int) error {
+	err := pr.st.DeleteOne(id)
+	if err != nil {
+		return err
+	}
+	return nil
 }

@@ -1,7 +1,9 @@
 package handlers
 
 import (
+	"errors"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/camikanerloy/claseWeb1Parte2/internal/domain"
@@ -31,6 +33,12 @@ func (ph ProductHandler) GetPong() gin.HandlerFunc {
 
 func (ph ProductHandler) GetProducts() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		token := ctx.GetHeader("token")
+		if token != os.Getenv("TOKEN") {
+			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "invalid token"})
+			return
+		}
+
 		//response
 		prod, err := ph.ProductService.GetProducts()
 
@@ -44,6 +52,12 @@ func (ph ProductHandler) GetProducts() gin.HandlerFunc {
 
 func (ph ProductHandler) GetProductById() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		token := ctx.GetHeader("token")
+		if token != os.Getenv("TOKEN") {
+			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "invalid token"})
+			return
+		}
+
 		//request
 		id, err := strconv.Atoi(ctx.Param("id"))
 		if err != nil {
@@ -64,6 +78,12 @@ func (ph ProductHandler) GetProductById() gin.HandlerFunc {
 
 func (ph ProductHandler) GetProductQuery() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		token := ctx.GetHeader("token")
+		if token != os.Getenv("TOKEN") {
+			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "invalid token"})
+			return
+		}
+
 		//request
 		priceQuery, err := strconv.ParseFloat(ctx.Query("priceGt"), 64)
 		if err != nil {
@@ -86,6 +106,12 @@ func (ph ProductHandler) GetProductQuery() gin.HandlerFunc {
 
 func (ph ProductHandler) CreateProduct() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		token := ctx.GetHeader("token")
+		if token != os.Getenv("TOKEN") {
+			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "invalid token"})
+			return
+		}
+
 		//request
 		var request domain.Request
 		if err := ctx.ShouldBind(&request); err != nil {
@@ -113,6 +139,12 @@ func (ph ProductHandler) CreateProduct() gin.HandlerFunc {
 // Put actualiza un producto
 func (h *ProductHandler) Put() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		token := ctx.GetHeader("token")
+		if token != os.Getenv("TOKEN") {
+			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "invalid token"})
+			return
+		}
+
 		idParam := ctx.Param("id")
 		id, err := strconv.Atoi(idParam)
 		if err != nil {
@@ -145,6 +177,12 @@ func (h *ProductHandler) Patch() gin.HandlerFunc {
 		Price       float64 `json:"price,omitempty"`
 	}
 	return func(ctx *gin.Context) {
+		token := ctx.GetHeader("token")
+		if token != os.Getenv("TOKEN") {
+			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "invalid token"})
+			return
+		}
+
 		var r Request
 		idParam := ctx.Param("id")
 		id, err := strconv.Atoi(idParam)
@@ -171,5 +209,35 @@ func (h *ProductHandler) Patch() gin.HandlerFunc {
 			return
 		}
 		ctx.JSON(200, p)
+	}
+}
+
+func (ph *ProductHandler) Delete() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		//Sacar el token del context
+		token := ctx.GetHeader("TOKEN")
+		if token == "" {
+			ctx.JSON(401, errors.New("token not found"))
+			return
+		}
+		if token != os.Getenv("TOKEN") {
+			ctx.JSON(401, errors.New("invalid token"))
+			return
+		}
+
+		//recuperar el id
+		id, err := strconv.Atoi(ctx.Param("id"))
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, err)
+			return
+		}
+
+		err = ph.ProductService.Delete(id)
+		if err != nil {
+			ctx.JSON(404, err)
+			return
+		}
+
+		ctx.JSON(204, nil)
 	}
 }
