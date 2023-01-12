@@ -71,18 +71,19 @@ func loadProducts(path string) ([]domain.Product, error) {
 	return products, nil
 }
 
-func writeProducts(path string, list []domain.Product) error {
-	bytes, err := json.Marshal(list)
-	if err != nil {
+/*
+	func writeProducts(path string, list []domain.Product) error {
+		bytes, err := json.Marshal(list)
+		if err != nil {
+			return err
+		}
+		err = os.WriteFile(path, bytes, 0644)
+		if err != nil {
+			return err
+		}
 		return err
 	}
-	err = os.WriteFile(path, bytes, 0644)
-	if err != nil {
-		return err
-	}
-	return err
-}
-
+*/
 func Test_GetAll_OK(t *testing.T) {
 	var expectd = response{Data: []domain.Product{}}
 

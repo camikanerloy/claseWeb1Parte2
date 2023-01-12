@@ -31,6 +31,7 @@ func (r *Router) SetProduct() {
 
 	r.en.GET("/ping", h.GetPong())
 	prods := r.en.Group("/products")
+	prods.Use(handlers.TokenAuthMiddleware())
 	{
 		prods.GET("/", h.GetAll())
 

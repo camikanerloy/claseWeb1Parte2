@@ -39,7 +39,11 @@ func main() {
 	}
 
 	//server
-	sv := gin.Default()
+	//sv := gin.Default()
+
+	sv := gin.New()
+	sv.Use(gin.Recovery())
+
 	r := routes.NewRoute(sv)
 	r.SetRoutes()
 	//start

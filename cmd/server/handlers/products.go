@@ -34,16 +34,16 @@ func (ph ProductHandler) GetPong() gin.HandlerFunc {
 
 func (ph ProductHandler) GetAll() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		token := ctx.GetHeader("token")
-		if token == "" {
-			web.Failure(ctx, 401, errors.New("token not found"))
-			return
-		}
-		if token != os.Getenv("TOKEN") {
-			web.Failure(ctx, http.StatusUnauthorized, errors.New("error: invalid token"))
-			return
-		}
-
+		/*		token := ctx.GetHeader("token")
+				if token == "" {
+					web.Failure(ctx, http.StatusUnauthorized, errors.New("token not found"))
+					return
+				}
+				if token != os.Getenv("TOKEN") {
+					web.Failure(ctx, http.StatusUnauthorized, errors.New("error: invalid token"))
+					return
+				}
+		*/
 		//response
 		prod, err := ph.ProductService.GetProducts()
 
