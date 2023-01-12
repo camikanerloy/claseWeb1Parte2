@@ -32,14 +32,14 @@ func (r *Router) SetProduct() {
 	r.en.GET("/ping", h.GetPong())
 	prods := r.en.Group("/products")
 	{
-		prods.GET("/", h.GetProducts())
+		prods.GET("/", h.GetAll())
 
-		prods.GET("/:id", h.GetProductById())
+		prods.GET("/:id", h.GetByID())
 
-		prods.GET("/search", h.GetProductQuery())
+		prods.GET("/search", h.Search())
 
 		//Ejercitacion 2
-		prods.POST("/", h.CreateProduct())
+		prods.POST("/", h.Post())
 		prods.PUT("/:id", h.Put())
 		prods.PATCH("/:id", h.Patch())
 		prods.DELETE("/:id", h.Delete())

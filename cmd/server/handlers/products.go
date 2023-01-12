@@ -32,7 +32,7 @@ func (ph ProductHandler) GetPong() gin.HandlerFunc {
 	}
 }
 
-func (ph ProductHandler) GetProducts() gin.HandlerFunc {
+func (ph ProductHandler) GetAll() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		token := ctx.GetHeader("token")
 		if token == "" {
@@ -51,11 +51,12 @@ func (ph ProductHandler) GetProducts() gin.HandlerFunc {
 			web.Failure(ctx, http.StatusInternalServerError, err)
 		}
 
-		ctx.JSON(http.StatusOK, response.Ok("Ok", prod))
+		web.Success(ctx, http.StatusOK, prod)
+		//ctx.JSON(http.StatusOK, response.Ok("Ok", prod))
 	}
 }
 
-func (ph ProductHandler) GetProductById() gin.HandlerFunc {
+func (ph ProductHandler) GetByID() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		token := ctx.GetHeader("token")
 		if token == "" {
@@ -85,7 +86,7 @@ func (ph ProductHandler) GetProductById() gin.HandlerFunc {
 	}
 }
 
-func (ph ProductHandler) GetProductQuery() gin.HandlerFunc {
+func (ph ProductHandler) Search() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		token := ctx.GetHeader("token")
 		if token == "" {
@@ -118,7 +119,7 @@ func (ph ProductHandler) GetProductQuery() gin.HandlerFunc {
 
 // Ejercitacion 2
 
-func (ph ProductHandler) CreateProduct() gin.HandlerFunc {
+func (ph ProductHandler) Post() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		token := ctx.GetHeader("token")
 		if token == "" {
