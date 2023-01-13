@@ -33,6 +33,17 @@ type ResponseByID struct {
 	Data    domain.Product
 }
 
+// @title MELI Bootcamp API Supermercado
+// @version 1.0
+// @description This API Handle MELI Products.
+// @termsOfService https://developers.mercadolibre.com.ar/es_ar/terminos-y-condiciones
+
+// @contact.name API Support
+// @contact.url https://developers.mercadolibre.com.ar/support
+
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+
 func main() {
 	if err := godotenv.Load("/Users/CKANER/bootcamp/claseWeb1Parte2/cmd/server/.env"); err != nil {
 		panic("Error loading .env file: " + err.Error())
@@ -55,7 +66,7 @@ func main() {
 
 func GetProductsStruct() (data []domain.Product, err error) {
 
-	jsonFile, err := os.Open("/Users/CKANER/bootcamp/claseWeb1Parte2/products.json")
+	jsonFile, err := os.Open("../../products.json")
 
 	if err != nil {
 		return

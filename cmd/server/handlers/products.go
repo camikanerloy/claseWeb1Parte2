@@ -8,7 +8,6 @@ import (
 
 	"github.com/camikanerloy/claseWeb1Parte2/internal/domain"
 	"github.com/camikanerloy/claseWeb1Parte2/internal/interfaces"
-	"github.com/camikanerloy/claseWeb1Parte2/pkg/response"
 	"github.com/camikanerloy/claseWeb1Parte2/pkg/web"
 	"github.com/go-playground/validator/v10"
 
@@ -32,6 +31,14 @@ func (ph ProductHandler) GetPong() gin.HandlerFunc {
 	}
 }
 
+// ListProducts godoc
+// @Summary List products
+// @Tags Products
+// @Description get products
+// @Accept  json
+// @Produce  json
+// @Param token header string true "token"
+// @Router /products [get]
 func (ph ProductHandler) GetAll() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		/*		token := ctx.GetHeader("token")
@@ -56,6 +63,14 @@ func (ph ProductHandler) GetAll() gin.HandlerFunc {
 	}
 }
 
+// StoreProducts godoc
+// @Summary Search product by id
+// @Tags Products
+// @Description get product by id
+// @Accept  json
+// @Produce  json
+// @Param token header string true "token"
+// @Router /products [get]
 func (ph ProductHandler) GetByID() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		token := ctx.GetHeader("token")
@@ -82,10 +97,19 @@ func (ph ProductHandler) GetByID() gin.HandlerFunc {
 		}
 
 		//response
-		ctx.JSON(http.StatusOK, response.Ok("Ok", prod))
+		web.Success(ctx, http.StatusOK, prod)
+		//ctx.JSON(http.StatusOK, response.Ok("Ok", prod))
 	}
 }
 
+// StoreProducts godoc
+// @Summary Search product by query
+// @Tags Products
+// @Description get products by price limit
+// @Accept  json
+// @Produce  json
+// @Param token header string true "token"
+// @Router /products [get]
 func (ph ProductHandler) Search() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		token := ctx.GetHeader("token")
@@ -119,6 +143,14 @@ func (ph ProductHandler) Search() gin.HandlerFunc {
 
 // Ejercitacion 2
 
+// StoreProducts godoc
+// @Summary Store products
+// @Tags Products
+// @Description store products
+// @Accept  json
+// @Produce  json
+// @Param token header string true "token"
+// @Router /products [post]
 func (ph ProductHandler) Post() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		token := ctx.GetHeader("token")
@@ -156,6 +188,15 @@ func (ph ProductHandler) Post() gin.HandlerFunc {
 	}
 }
 
+// StoreProducts godoc
+// @Summary Store products
+// @Tags Products
+// @Description modify product
+// @Accept  json
+// @Produce  json
+// @Param token header string true "token"
+// @Router /products [put]
+
 // Put actualiza un producto
 func (h *ProductHandler) Put() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
@@ -186,9 +227,19 @@ func (h *ProductHandler) Put() gin.HandlerFunc {
 			web.Failure(ctx, 409, err)
 			return
 		}
-		ctx.JSON(200, p)
+		web.Success(ctx, http.StatusOK, p)
+		//ctx.JSON(200, p)
 	}
 }
+
+// StoreProducts godoc
+// @Summary Store products
+// @Tags Products
+// @Description modify product
+// @Accept  json
+// @Produce  json
+// @Param token header string true "token"
+// @Router /products [patch]
 
 // Patch update selected fields of a product WIP
 func (h *ProductHandler) Patch() gin.HandlerFunc {
@@ -237,10 +288,19 @@ func (h *ProductHandler) Patch() gin.HandlerFunc {
 			web.Failure(ctx, 409, err)
 			return
 		}
-		ctx.JSON(200, p)
+		web.Success(ctx, http.StatusOK, p)
+		//ctx.JSON(200, p)
 	}
 }
 
+// StoreProducts godoc
+// @Summary Delete products
+// @Tags Products
+// @Description delete product
+// @Accept  json
+// @Produce  json
+// @Param token header string true "token"
+// @Router /products [put]
 func (ph *ProductHandler) Delete() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		//Sacar el token del context

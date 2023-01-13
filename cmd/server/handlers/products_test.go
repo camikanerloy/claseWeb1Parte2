@@ -33,7 +33,7 @@ func createServer(token string) *gin.Engine {
 	repo := product.NewRepository(501, db)
 	service := product.NewService(repo)
 	productHandler := handlers.NewProductHandler(service)
-	gin.SetMode(gin.ReleaseMode)
+	//gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
 
 	pr := r.Group("/products")
